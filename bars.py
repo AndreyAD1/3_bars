@@ -18,32 +18,15 @@ def get_bar_attributes(bar_data):
         yield attributes
 
 
-def get_seats_count(list_of_bar_attributes):
-    seats_count_dictionary = {}
-    for bar_attributes in get_bar_attributes(list_of_bar_attributes):
-        try:
-            bar_seats_count = bar_attributes.pop('SeatsCount')
-        except KeyError:
-            bar_seats_count = None
-        seats_count_dictionary.update({bar_seats_count: bar_attributes})
-    return seats_count_dictionary
-
-
-def get_biggest_bar(seats_based_dict):
-    biggest_seats_number = max(seats_based_dict)
-    try:
-        biggest_bar_name = seats_based_dict[biggest_seats_number]['Name']
-    except KeyError:
-        biggest_bar_name = None
+def get_biggest_bar(bars_info):
+    biggest_bar_info = max(bars_info, key = lambda x: x['properties']['Attributes']['SeatsCount'])
+    biggest_bar_name = biggest_bar_info['properties']['Attributes']['Name']
     return biggest_bar_name
 
 
-def get_smallest_bar(seats_based_dict):
-    smallest_seats_number = min(seats_based_dict)
-    try:
-        smallest_bar_name = seats_based_dict[smallest_seats_number]['Name']
-    except KeyError:
-        smallest_bar_name = None
+def get_smallest_bar(bars_info):
+    smallest_bar_info = min(bars_info, key = lambda x: x['properties']['Attributes']['SeatsCount'])
+    smallest_bar_name = smallest_bar_info['properties']['Attributes']['Name']
     return smallest_bar_name
 
 
@@ -92,9 +75,8 @@ if __name__ == '__main__':
     json_path = os.path.join(absolute_path, 'bars.json')
     bar_info = load_data(json_path)
     bar_list = bar_info['features']
-    seats_dictionary = get_seats_count(bar_list)
-    biggest_bar = get_biggest_bar(seats_dictionary)
-    smallest_bar = get_smallest_bar(seats_dictionary)
+    biggest_bar = get_biggest_bar(bar_list)
+    smallest_bar = get_smallest_bar(bar_list)
     print('Самый большой бар Москвы: ', biggest_bar)
     print('Самый маленький бар Москвы: ', smallest_bar)
     while True:
