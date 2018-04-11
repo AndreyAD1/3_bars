@@ -4,8 +4,8 @@ import math
 
 
 def load_data(filepath):
-    with open(filepath, 'r', encoding='utf-8') as f:
-        bar_data = json.load(f)
+    with open(filepath, 'r', encoding='utf-8') as data_file:
+        bar_data = json.load(data_file)
     return bar_data
 
 
@@ -14,8 +14,6 @@ def get_bar_attributes(bar_data):
         try:
             attributes = bar['properties']['Attributes']
         except KeyError:
-            print('В файле с данными нет атрибутов "properties" '
-                  'и/или "Attributes"')
             attributes = None
         yield attributes
 
@@ -26,32 +24,27 @@ def get_seats_count(list_of_bar_attributes):
         try:
             bar_seats_count = bar_attributes.pop('SeatsCount')
         except KeyError:
-            print('В файле с данными нет атрибута "SeatsCount"')
             bar_seats_count = None
         seats_count_dictionary.update({bar_seats_count: bar_attributes})
     return seats_count_dictionary
 
 
 def get_biggest_bar(seats_based_dict):
-    seats_count_list = seats_based_dict.keys()
-    biggest_seats_number = max(seats_count_list)
+    biggest_seats_number = max(seats_based_dict)
     try:
         biggest_bar_name = seats_based_dict[biggest_seats_number]['Name']
     except KeyError:
-        print('В файле с данными нет атрибута "Name"')
         biggest_bar_name = None
-    print('Самый большой бар Москвы: ', biggest_bar_name)
+    return biggest_bar_name
 
 
 def get_smallest_bar(seats_based_dict):
-    seats_count_list = seats_based_dict.keys()
-    smallest_seats_number = min(seats_count_list)
+    smallest_seats_number = min(seats_based_dict)
     try:
         smallest_bar_name = seats_based_dict[smallest_seats_number]['Name']
     except KeyError:
-        print('В файле с данными нет атрибута "Name"')
         smallest_bar_name = None
-    print('Самый маленький бар Москвы: ', smallest_bar_name)
+    return smallest_bar_name
 
 
 def get_bar_address(bar_features):
@@ -83,8 +76,7 @@ def get_closest_bar(bar_data, longitude, latitude):
             minimal_distance = distance
             closest_bar = bar['properties']['Attributes']['Name']
             closest_bar_address = get_bar_address(bar)
-    print('Ближайший к Вам бар: ', closest_bar,
-          '. Он находится по адресу:', closest_bar_address)
+    return closest_bar, closest_bar_address
 
 
 def get_user_coordinates():
@@ -101,8 +93,10 @@ if __name__ == '__main__':
     bar_info = load_data(json_path)
     bar_list = bar_info['features']
     seats_dictionary = get_seats_count(bar_list)
-    get_biggest_bar(seats_dictionary)
-    get_smallest_bar(seats_dictionary)
+    biggest_bar = get_biggest_bar(seats_dictionary)
+    smallest_bar = get_smallest_bar(seats_dictionary)
+    print('Самый большой бар Москвы: ', biggest_bar)
+    print('Самый маленький бар Москвы: ', smallest_bar)
     while True:
         try:
             lat, long = get_user_coordinates()
@@ -110,4 +104,6 @@ if __name__ == '__main__':
         except ValueError:
             print('Широта и долгота должны быть числами')
             continue
-    get_closest_bar(bar_list, long, lat)
+    nearest_bar, nearest_address = get_closest_bar(bar_list, long, lat)
+    print('Ближайший к Вам бар: ', nearest_bar,
+          '. Он находится по адресу:', nearest_address)
