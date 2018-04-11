@@ -87,6 +87,14 @@ def get_closest_bar(bar_data, longitude, latitude):
           '. Он находится по адресу:', closest_bar_address)
 
 
+def get_user_coordinates():
+    latitude = float(input('Чтобы узнать название самого близкого бара, '
+                           'введите свои gps координаты в формате '
+                           'DD.DDD.\nШирота: '))
+    longitude = float(input('Долгота: '))
+    return latitude, longitude
+
+
 if __name__ == '__main__':
     absolute_path = os.path.dirname(os.path.abspath(__file__))
     json_path = os.path.join(absolute_path, 'bars.json')
@@ -95,12 +103,11 @@ if __name__ == '__main__':
     seats_dictionary = get_seats_count(bar_list)
     get_biggest_bar(seats_dictionary)
     get_smallest_bar(seats_dictionary)
-    try:
-        lat = float(input('Чтобы узнать название самого близкого бара, '
-                          'введите свои gps координаты в формате '
-                          'DD.DDD.\nШирота: '))
-        long = float(input('Долгота: '))
-    except ValueError:
-        print('Широта и долгота должны быть числами')
-        raise
+    while True:
+        try:
+            lat, long = get_user_coordinates()
+            break
+        except ValueError:
+            print('Широта и долгота должны быть числами')
+            continue
     get_closest_bar(bar_list, long, lat)
