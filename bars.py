@@ -1,31 +1,26 @@
 import json
-import os
 import math
+import argparse
 
 
-def load_data(filepath):
-    with open(filepath, 'r', encoding='utf-8') as data_file:
+def load_data(file_path='bars.json'):
+    with open(file_path, 'r', encoding='utf-8') as data_file:
         bar_data = json.load(data_file)
     return bar_data
 
 
-def get_bar_attributes(bar_data):
-    for bar in bar_data:
-        try:
-            attributes = bar['properties']['Attributes']
-        except KeyError:
-            attributes = None
-        yield attributes
-
-
 def get_biggest_bar(bars_info):
-    biggest_bar_info = max(bars_info, key = lambda x: x['properties']['Attributes']['SeatsCount'])
+    biggest_bar_info = max(bars_info, key=lambda x:
+                           x['properties']['Attributes']['SeatsCount']
+                           )
     biggest_bar_name = biggest_bar_info['properties']['Attributes']['Name']
     return biggest_bar_name
 
 
 def get_smallest_bar(bars_info):
-    smallest_bar_info = min(bars_info, key = lambda x: x['properties']['Attributes']['SeatsCount'])
+    smallest_bar_info = min(bars_info, key=lambda x:
+                            x['properties']['Attributes']['SeatsCount']
+                            )
     smallest_bar_name = smallest_bar_info['properties']['Attributes']['Name']
     return smallest_bar_name
 
@@ -70,14 +65,28 @@ def get_user_coordinates():
     return latitude, longitude
 
 
+def get_console_arguments():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--file',
+                        help='Если файл с данными называется не "bars.json"'
+                             ' и/или файл не лежит в папке скрипта, то '
+                             'используйте этот параметр, чтобы указать путь '
+                             'к файлу с данными о барах.'
+                        )
+    args = parser.parse_args()
+    return args.file
+
+
 if __name__ == '__main__':
-    absolute_path = os.path.dirname(os.path.abspath(__file__))
-    json_path = os.path.join(absolute_path, 'bars.json')
-    bar_info = load_data(json_path)
+    path = 'bars.json'
+    user_path = get_console_arguments()
+    if user_path:
+        path = user_path
+    bar_info = load_data(path)
     bar_list = bar_info['features']
     biggest_bar = get_biggest_bar(bar_list)
     smallest_bar = get_smallest_bar(bar_list)
-    print('Самый большой бар Москвы: ', biggest_bar)
+    print('Самый большой бар Москвы ', biggest_bar)
     print('Самый маленький бар Москвы: ', smallest_bar)
     while True:
         try:
