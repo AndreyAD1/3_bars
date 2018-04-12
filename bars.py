@@ -33,28 +33,37 @@ def get_bar_address(bar_features):
     return bar_address
 
 
+def get_distance(bar_info, longitude, latitude):
+    bar_longitude, bar_latitude = bar_info['geometry']['coordinates']
+    distance = math.hypot(bar_longitude - longitude,
+                          bar_latitude - latitude)
+    return distance
+
 def get_closest_bar(bar_data, longitude, latitude):
-    first_loop = True
-    closest_bar = None
-    closest_bar_address = None
-    minimal_distance = 0
-    for bar in bar_data:
-        try:
-            coordinates = bar['geometry']['coordinates']
-        except KeyError:
-            continue
-        distance = math.hypot(coordinates[0] - longitude,
-                              coordinates[1] - latitude)
-        if first_loop:
-            minimal_distance = distance
-            closest_bar = bar['properties']['Attributes']['Name']
-            closest_bar_address = get_bar_address(bar)
-            first_loop = False
-        if distance < minimal_distance:
-            minimal_distance = distance
-            closest_bar = bar['properties']['Attributes']['Name']
-            closest_bar_address = get_bar_address(bar)
-    return closest_bar, closest_bar_address
+    # closest_bar = min(bar_data, key=get_distance(__getitem__,longitude, latitude))
+    closest_bar = min(bar_data, key=lambda x: get_distance(x, longitude, latitude))
+    return closest_bar
+    # first_loop = True
+    # closest_bar = None
+    # closest_bar_address = None
+    # minimal_distance = 0
+    # for bar in bar_data:
+    #     try:
+    #         coordinates = bar['geometry']['coordinates']
+    #     except KeyError:
+    #         continue
+    #     distance = math.hypot(coordinates[0] - longitude,
+    #                           coordinates[1] - latitude)
+    #     if first_loop:
+    #         minimal_distance = distance
+    #         closest_bar = bar['properties']['Attributes']['Name']
+    #         closest_bar_address = get_bar_address(bar)
+    #         first_loop = False
+    #     if distance < minimal_distance:
+    #         minimal_distance = distance
+    #         closest_bar = bar['properties']['Attributes']['Name']
+    #         closest_bar_address = get_bar_address(bar)
+    # return closest_bar, closest_bar_address
 
 
 def get_user_coordinates():
@@ -95,6 +104,8 @@ if __name__ == '__main__':
         except ValueError:
             print('Широта и долгота должны быть числами')
             continue
-    nearest_bar, nearest_address = get_closest_bar(bar_list, long, lat)
-    print('Ближайший к Вам бар: ', nearest_bar,
-          '. Он находится по адресу:', nearest_address)
+    nearest_bar = get_closest_bar(bar_list, long, lat)
+    nearest_bar_name = nearest_bar['properties']['Attributes']['Name']
+    nearest_bar_address = nearest_bar['properties']['Attributes']['Address']
+    print('Ближайший к Вам бар: ', nearest_bar_name,
+          '. Он находится по адресу:', nearest_bar_address)
