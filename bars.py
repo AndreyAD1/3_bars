@@ -72,9 +72,8 @@ if __name__ == '__main__':
         exit('Не удалось найти файл с данными о барах.')
     if not bar_info:
         exit('Указанный файл не содержит данные в формате json.')
-    bar_list = bar_info['features']
-    biggest_bar_info = get_biggest_bar(bar_list)
-    smallest_bar_info = get_smallest_bar(bar_list)
+    biggest_bar_info = get_biggest_bar(bar_info['features'])
+    smallest_bar_info = get_smallest_bar(bar_info['features'])
     biggest_bar_name = biggest_bar_info['properties']['Attributes']['Name']
     smallest_bar_name = smallest_bar_info['properties']['Attributes']['Name']
     print('Самый большой бар Москвы ', biggest_bar_name)
@@ -83,7 +82,7 @@ if __name__ == '__main__':
         lat, long = get_user_coordinates()
     except ValueError:
         exit('Широта и долгота должны быть числами')
-    nearest_bar = get_closest_bar(bar_list, long, lat)
+    nearest_bar = get_closest_bar(bar_info['features'], long, lat)
     nearest_bar_name = nearest_bar['properties']['Attributes']['Name']
     nearest_bar_address = nearest_bar['properties']['Attributes']['Address']
     print('Ближайший к Вам бар: ', nearest_bar_name,
