@@ -43,14 +43,6 @@ def get_closest_bar(bar_data, longitude, latitude):
     return closest_bar
 
 
-def get_user_coordinates():
-    latitude = float(input('Чтобы узнать название самого близкого бара, '
-                           'введите свои gps координаты в формате '
-                           'DD.DDD.\nШирота: '))
-    longitude = float(input('Долгота: '))
-    return latitude, longitude
-
-
 def get_console_arguments():
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -60,23 +52,32 @@ def get_console_arguments():
              ' в папке скрипта, то используйте этот параметр, чтобы указать'
              ' путь к файлу с данными о барах.'
     )
+    parser.add_argument(
+        '-lat',
+        '--latitude',
+        type=float,
+        help='Введите широту в формате DD.DDD, чтобы узнать название '
+             'самого близкого бара.'
+    )
+    parser.add_argument(
+        '-long',
+        '--longitude',
+        type=float,
+        help='Введите долготу в формате DD.DDD, чтобы узнать название '
+             'самого близкого бара.'
+    )
     args = parser.parse_args()
     return args
 
 
-def get_bar_name(bar_info):
-    bar_name = bar_info['properties']['Attributes']['Name']
-    return bar_name
-
-
-def print_results(biggest_bar, smallest_bar, nearest_bar):
-    print('Самый большой бар Москвы ', biggest_bar)
-    print('Самый маленький бар Москвы: ', smallest_bar)
-    print('Ближайший к Вам бар: ', nearest_bar)
+def print_results(bar_description, bar):
+    bar_name = bar['properties']['Attributes']['Name']
+    print(bar_description, bar_name)
 
 
 if __name__ == '__main__':
-    user_file_path = get_console_arguments().file
+    console_arguments = get_console_arguments()
+    user_file_path = console_arguments.file
     try:
         bar_info = load_data(user_file_path)
     except FileNotFoundError:
@@ -85,12 +86,10 @@ if __name__ == '__main__':
         exit('Указанный файл не содержит данные в формате json.')
     biggest_bar_info = get_biggest_bar(bar_info['features'])
     smallest_bar_info = get_smallest_bar(bar_info['features'])
-    biggest_bar_name = get_bar_name(biggest_bar_info)
-    smallest_bar_name = get_bar_name(smallest_bar_info)
-    try:
-        lat, long = get_user_coordinates()
-    except ValueError:
-        exit('Широта и долгота должны быть числами')
-    nearest_bar_info = get_closest_bar(bar_info['features'], long, lat)
-    nearest_bar_name = get_bar_name(nearest_bar_info)
-    print_results(biggest_bar_name, smallest_bar_name, nearest_bar_name)
+    print_results('Самый большой бар Москвы: ', biggest_bar_info)
+    print_results('Самый маленький бар Москвы: ', smallest_bar_info)
+    lat = console_arguments.latitude
+    long = console_arguments.longitude
+    if lat and long:
+        nearest_bar_info = get_closest_bar(bar_info['features'], long, lat)
+        print_results('Ближайший к Вам бар: ', nearest_bar_info)
