@@ -7,9 +7,10 @@ def load_data(file_path='bars.json'):
     with open(file_path, 'r', encoding='utf-8') as data_file:
         try:
             bar_data = json.load(data_file)
+            return bar_data
         except json.decoder.JSONDecodeError:
             bar_data = None
-    return bar_data
+            return bar_data
 
 
 def get_biggest_bar(bars_info):
@@ -46,25 +47,23 @@ def get_closest_bar(bar_data, longitude, latitude):
 def get_console_arguments():
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        '--file',
-        default='bars.json',
-        help='Если файл с данными называется не "bars.json" и/или файл не лежит'
-             ' в папке скрипта, то используйте этот параметр, чтобы указать'
-             ' путь к файлу с данными о барах.'
-    )
-    parser.add_argument(
-        '-lat',
-        '--latitude',
+        'latitude',
         type=float,
         help='Введите широту в формате DD.DDD, чтобы узнать название '
              'самого близкого бара.'
     )
     parser.add_argument(
-        '-long',
-        '--longitude',
+        'longitude',
         type=float,
         help='Введите долготу в формате DD.DDD, чтобы узнать название '
              'самого близкого бара.'
+    )
+    parser.add_argument(
+        '--file',
+        default='bars.json',
+        help='Если файл с данными называется не "bars.json" и/или файл не лежит'
+             ' в папке скрипта, то используйте этот параметр, чтобы указать'
+             ' путь к файлу с данными о барах.'
     )
     args = parser.parse_args()
     return args
@@ -84,12 +83,12 @@ if __name__ == '__main__':
         exit('Не удалось найти файл с данными о барах.')
     if not bar_info:
         exit('Указанный файл не содержит данные в формате json.')
-    biggest_bar_info = get_biggest_bar(bar_info['features'])
-    smallest_bar_info = get_smallest_bar(bar_info['features'])
+    bar_features = bar_info['features']
+    biggest_bar_info = get_biggest_bar(bar_features)
+    smallest_bar_info = get_smallest_bar(bar_features)
     print_results('Самый большой бар Москвы: ', biggest_bar_info)
     print_results('Самый маленький бар Москвы: ', smallest_bar_info)
     lat = console_arguments.latitude
     long = console_arguments.longitude
-    if lat and long:
-        nearest_bar_info = get_closest_bar(bar_info['features'], long, lat)
-        print_results('Ближайший к Вам бар: ', nearest_bar_info)
+    nearest_bar_info = get_closest_bar(bar_features, long, lat)
+    print_results('Ближайший к Вам бар: ', nearest_bar_info)
