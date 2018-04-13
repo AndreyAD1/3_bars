@@ -8,7 +8,7 @@ def load_data(file_path='bars.json'):
         try:
             bar_data = json.load(data_file)
         except json.decoder.JSONDecodeError:
-            exit('Указанный файл не содержит данные в формате json.')
+            bar_data = None
     return bar_data
 
 
@@ -71,6 +71,8 @@ if __name__ == '__main__':
         bar_info = load_data(user_file_path)
     except FileNotFoundError:
         exit('Не удалось найти файл с данными о барах.')
+    if not bar_info:
+        exit('Указанный файл не содержит данные в формате json.')
     bar_list = bar_info['features']
     biggest_bar_info = get_biggest_bar(bar_list)
     smallest_bar_info = get_smallest_bar(bar_list)
