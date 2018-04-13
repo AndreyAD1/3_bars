@@ -5,7 +5,10 @@ import argparse
 
 def load_data(file_path='bars.json'):
     with open(file_path, 'r', encoding='utf-8') as data_file:
-        bar_data = json.load(data_file)
+        try:
+            bar_data = json.load(data_file)
+        except json.decoder.JSONDecodeError:
+            exit('Указанный файл не содержит данные в формате json.')
     return bar_data
 
 
@@ -52,6 +55,7 @@ def get_console_arguments():
     parser = argparse.ArgumentParser()
     parser.add_argument(
         '--file',
+        default='bars.json',
         help='Если файл с данными называется не "bars.json" и/или файл не лежит'
              ' в папке скрипта, то используйте этот параметр, чтобы указать'
              ' путь к файлу с данными о барах.'
@@ -63,10 +67,10 @@ def get_console_arguments():
 if __name__ == '__main__':
     console_arguments = get_console_arguments()
     user_file_path = console_arguments.file
-    if user_file_path:
+    try:
         bar_info = load_data(user_file_path)
-    else:
-        bar_info = load_data()
+    except FileNotFoundError:
+        exit('Не удалось найти файл с данными о барах.')
     bar_list = bar_info['features']
     biggest_bar_info = get_biggest_bar(bar_list)
     smallest_bar_info = get_smallest_bar(bar_list)
