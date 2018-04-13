@@ -65,8 +65,7 @@ def get_console_arguments():
 
 
 if __name__ == '__main__':
-    console_arguments = get_console_arguments()
-    user_file_path = console_arguments.file
+    user_file_path = get_console_arguments().file
     try:
         bar_info = load_data(user_file_path)
     except FileNotFoundError:
