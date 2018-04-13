@@ -69,6 +69,12 @@ def get_bar_name(bar_info):
     return bar_name
 
 
+def print_results(biggest_bar, smallest_bar, nearest_bar):
+    print('Самый большой бар Москвы ', biggest_bar)
+    print('Самый маленький бар Москвы: ', smallest_bar)
+    print('Ближайший к Вам бар: ', nearest_bar)
+
+
 if __name__ == '__main__':
     user_file_path = get_console_arguments().file
     try:
@@ -81,12 +87,10 @@ if __name__ == '__main__':
     smallest_bar_info = get_smallest_bar(bar_info['features'])
     biggest_bar_name = get_bar_name(biggest_bar_info)
     smallest_bar_name = get_bar_name(smallest_bar_info)
-    print('Самый большой бар Москвы ', biggest_bar_name)
-    print('Самый маленький бар Москвы: ', smallest_bar_name)
     try:
         lat, long = get_user_coordinates()
     except ValueError:
         exit('Широта и долгота должны быть числами')
     nearest_bar_info = get_closest_bar(bar_info['features'], long, lat)
     nearest_bar_name = get_bar_name(nearest_bar_info)
-    print('Ближайший к Вам бар: ', nearest_bar_name)
+    print_results(biggest_bar_name, smallest_bar_name, nearest_bar_name)
