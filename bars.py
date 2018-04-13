@@ -85,5 +85,4 @@ if __name__ == '__main__':
     nearest_bar = get_closest_bar(bar_info['features'], long, lat)
     nearest_bar_name = nearest_bar['properties']['Attributes']['Name']
     nearest_bar_address = nearest_bar['properties']['Attributes']['Address']
-    print('Ближайший к Вам бар: ', nearest_bar_name,
-          '. Он находится по адресу:', nearest_bar_address)
+    print('Ближайший к Вам бар: ', nearest_bar_name)
