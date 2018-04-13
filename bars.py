@@ -9,8 +9,7 @@ def load_data(file_path='bars.json'):
             bar_data = json.load(data_file)
             return bar_data
         except json.decoder.JSONDecodeError:
-            bar_data = None
-            return bar_data
+            return None
 
 
 def get_biggest_bar(bars_info):
@@ -83,12 +82,12 @@ if __name__ == '__main__':
         exit('Не удалось найти файл с данными о барах.')
     if not bar_info:
         exit('Указанный файл не содержит данные в формате json.')
-    bar_features = bar_info['features']
-    biggest_bar_info = get_biggest_bar(bar_features)
-    smallest_bar_info = get_smallest_bar(bar_features)
+    bars = bar_info['features']
+    biggest_bar_info = get_biggest_bar(bars)
+    smallest_bar_info = get_smallest_bar(bars)
     print_results('Самый большой бар Москвы: ', biggest_bar_info)
     print_results('Самый маленький бар Москвы: ', smallest_bar_info)
     lat = console_arguments.latitude
     long = console_arguments.longitude
-    nearest_bar_info = get_closest_bar(bar_features, long, lat)
+    nearest_bar_info = get_closest_bar(bars, long, lat)
     print_results('Ближайший к Вам бар: ', nearest_bar_info)
